@@ -1,5 +1,6 @@
 package com.openswift.keyboard
 
+import android.content.Context
 import android.content.Intent
 import android.inputmethodservice.InputMethodService
 import android.view.KeyEvent
@@ -137,6 +138,63 @@ class OpenSwiftIME : InputMethodService() {
             clipboardMode = false
             showKeyboardView()
         }
+        clipboardView.onCopyRequested = {
+            val ic = currentInputConnection
+            if (ic != null) {
+                val selected = ic.getSelectedText(0)?.toString()
+                if (!selected.isNullOrBlank()) {
+                    val cb = getSystemService(Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+                    cb?.setPrimaryClip(android.content.ClipData.newPlainText("OpenSwift", selected))
+                    clipboard.add(selected)
+                    clipboardView.refresh()
+                } else {
+                    ic.performContextMenuAction(android.R.id.copy)
+                    clipboard.captureSystem(this, enabled = true, privateField = false)
+                    clipboardView.refresh()
+                }
+            }
+        }
+        clipboardView.onPasteRequested = {
+            val ic = currentInputConnection
+            if (ic != null) {
+                val latest = clipboard.items().firstOrNull()
+                if (latest != null) {
+                    ic.commitText(latest, 1)
+                    clearInputBuffers()
+                    clipboardMode = false
+                    showKeyboardView()
+                } else {
+                    val cb = getSystemService(Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+                    val clip = cb?.primaryClip
+                    if (clip != null && clip.itemCount > 0) {
+                        val text = clip.getItemAt(0).coerceToText(this)?.toString()
+                        if (!text.isNullOrBlank()) {
+                            ic.commitText(text, 1)
+                            clipboard.add(text)
+                            clearInputBuffers()
+                            clipboardMode = false
+                            showKeyboardView()
+                        }
+                    }
+                }
+            }
+        }
+        clipboardView.onCutRequested = {
+            val ic = currentInputConnection
+            if (ic != null) {
+                val selected = ic.getSelectedText(0)?.toString()
+                if (!selected.isNullOrBlank()) {
+                    val cb = getSystemService(Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+                    cb?.setPrimaryClip(android.content.ClipData.newPlainText("OpenSwift", selected))
+                    clipboard.add(selected)
+                }
+                ic.performContextMenuAction(android.R.id.cut)
+                clipboardView.refresh()
+            }
+        }
+        clipboardView.onSelectAllRequested = {
+            currentInputConnection?.performContextMenuAction(android.R.id.selectAll)
+        }
         clipboardInputView = withNavigationBarInset(clipboardView, Themes.Amoled.background)
 
         numberRowView = com.openswift.keyboard.view.NumberRowView(this)
@@ -162,7 +220,7 @@ class OpenSwiftIME : InputMethodService() {
         applyInputProfile()
         clipboard.captureSystem(
             ctx = this,
-            enabled = settings.clipboardEnabled,
+            enabled = true,
             privateField = privacyModeActive
         )
         shiftActive = settings.autoCapitalize // Start with shift active if auto-capitalize is on
@@ -408,6 +466,7 @@ class OpenSwiftIME : InputMethodService() {
 
     private fun showClipboardView() {
         if (privacyModeActive) return
+        clipboard.captureSystem(this, enabled = true, privateField = false)
         clipboardMode = true
         clipboardView.refresh()
         setInputView(clipboardInputView)
