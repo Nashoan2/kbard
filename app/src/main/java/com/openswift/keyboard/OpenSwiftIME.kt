@@ -270,7 +270,14 @@ class OpenSwiftIME : InputMethodService() {
                 }
             }
         }
-        if (settings.hapticFeedback) vibrator.vibrate(20)
+        if (settings.hapticFeedback) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                vibrator.vibrate(android.os.VibrationEffect.createOneShot(20, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(20)
+            }
+        }
     }
 
     private fun commitWord(word: String) {
@@ -349,6 +356,7 @@ class OpenSwiftIME : InputMethodService() {
 
     override fun onCurrentInputMethodSubtypeChanged(newSubtype: InputMethodSubtype?) {
         super.onCurrentInputMethodSubtypeChanged(newSubtype)
+        @Suppress("DEPRECATION")
         val locale = newSubtype?.languageTag?.takeIf { it.isNotBlank() } ?: newSubtype?.locale
         if (!locale.isNullOrBlank()) {
             settings.language = KeyboardLanguages.byLocale(locale).code

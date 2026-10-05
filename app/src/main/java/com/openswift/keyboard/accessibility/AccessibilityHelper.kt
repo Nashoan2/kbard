@@ -11,8 +11,7 @@ class AccessibilityHelper(private val accessibilityManager: AccessibilityManager
 
     fun announceKey(key: String) {
         if (accessibilityManager.isEnabled) {
-            val event = AccessibilityEvent.obtain()
-            event.eventType = AccessibilityEvent.TYPE_ANNOUNCEMENT
+            val event = AccessibilityEvent(AccessibilityEvent.TYPE_ANNOUNCEMENT)
             event.text.add("Key: $key")
             accessibilityManager.sendAccessibilityEvent(event)
         }
@@ -20,8 +19,7 @@ class AccessibilityHelper(private val accessibilityManager: AccessibilityManager
 
     fun announceSuggestions(suggestions: List<String>) {
         if (accessibilityManager.isEnabled && suggestions.isNotEmpty()) {
-            val event = AccessibilityEvent.obtain()
-            event.eventType = AccessibilityEvent.TYPE_ANNOUNCEMENT
+            val event = AccessibilityEvent(AccessibilityEvent.TYPE_ANNOUNCEMENT)
             event.text.add("Suggestions: ${suggestions.joinToString(", ")}")
             accessibilityManager.sendAccessibilityEvent(event)
         }
