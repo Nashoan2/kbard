@@ -91,7 +91,7 @@ fun HomeUI(
             verticalArrangement = Arrangement.spacedBy(Spacing.xl)
         ) {
             // Keyboard Preview
-            var previewLayout by remember { mutableStateOf("symbols") }
+            var previewLayout by remember { mutableStateOf("123") }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -105,9 +105,9 @@ fun HomeUI(
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                     FilterChip(
-                        selected = previewLayout == "symbols",
-                        onClick = { previewLayout = "symbols" },
-                        label = { Text("الرموز", fontSize = 11.sp) },
+                        selected = previewLayout == "123",
+                        onClick = { previewLayout = "123" },
+                        label = { Text("123", fontSize = 11.sp) },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = accentColor.copy(alpha = 0.2f),
                             selectedLabelColor = accentColor,

@@ -17,7 +17,7 @@ import com.openswift.keyboard.theme.KbTheme
 fun KeyboardPreview(
     theme: KbTheme,
     modifier: Modifier = Modifier,
-    layoutId: String = "symbols"
+    layoutId: String = "123"
 ) {
     val bgColor = Color(theme.keyBackground)
     val textColor = Color(theme.keyText)
@@ -50,6 +50,80 @@ fun KeyboardPreview(
         }
 
         when (layoutId) {
+            "123", "numpad" -> {
+                // Layout matching 123.png exactly
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(keyHeight * 4 + keySpacing * 3),
+                    horizontalArrangement = Arrangement.spacedBy(keySpacing)
+                ) {
+                    // Column 1: Operators (+, -, *, /) and ABC at bottom
+                    Column(
+                        modifier = Modifier
+                            .weight(1.15f)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.spacedBy(keySpacing)
+                    ) {
+                        PreviewKey("+", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.75f))
+                        PreviewKey("-", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.75f))
+                        PreviewKey("*", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.75f))
+                        PreviewKey("/", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.75f))
+                        PreviewKey("ABC", bgColor, textColor, keyHeight, modifier = Modifier.weight(1f), isModifier = true)
+                    }
+
+                    // Columns 2, 3, 4, 5
+                    Column(
+                        modifier = Modifier
+                            .weight(7.15f)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.spacedBy(keySpacing)
+                    ) {
+                        // Row 1: 1 2 3 %
+                        Row(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(keySpacing)
+                        ) {
+                            PreviewKey("1", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("2", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("3", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("%", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.15f))
+                        }
+                        // Row 2: 4 5 6 ␣
+                        Row(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(keySpacing)
+                        ) {
+                            PreviewKey("4", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("5", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("6", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("␣", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.15f))
+                        }
+                        // Row 3: 7 8 9 ⌫
+                        Row(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(keySpacing)
+                        ) {
+                            PreviewKey("7", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("8", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("9", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("⌫", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.15f), isModifier = true)
+                        }
+                        // Row 4: , !?# 0 = . ↵
+                        Row(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(keySpacing)
+                        ) {
+                            PreviewKey(",", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.9f))
+                            PreviewKey("!?#", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.1f), isModifier = true)
+                            PreviewKey("0", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("=", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.1f))
+                            PreviewKey(".", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.9f))
+                            PreviewKey("↵", Color(0xFFA8C7FA), Color(0xFF041E49), keyHeight, modifier = Modifier.weight(1.15f), isModifier = true)
+                        }
+                    }
+                }
+            }
             "symbols" -> {
                 // Row 1: 1 2 3 + - @ $ ( )
                 Row(

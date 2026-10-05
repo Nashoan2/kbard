@@ -270,7 +270,7 @@ class OpenSwiftIME : InputMethodService() {
             }
             KC.SYMBOLS -> {
                 symbolsActive = true
-                currentLayout = Layouts.Symbols
+                currentLayout = Layouts.Numpad
                 keyboardView.updateLayout(currentLayout)
             }
             KC.ABC -> {
@@ -281,7 +281,11 @@ class OpenSwiftIME : InputMethodService() {
             }
             KC.SHIFT_SYMBOLS -> {
                 symbolsActive = true
-                currentLayout = if (currentLayout.id == Layouts.Symbols.id) Layouts.SymbolsShift else Layouts.Symbols
+                currentLayout = when (currentLayout.id) {
+                    Layouts.Numpad.id -> Layouts.Symbols
+                    Layouts.Symbols.id -> Layouts.SymbolsShift
+                    else -> Layouts.Symbols
+                }
                 keyboardView.updateLayout(currentLayout)
             }
             KC.LANGUAGE, KC.EMOJI -> {

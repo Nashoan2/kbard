@@ -137,6 +137,7 @@ class KeyboardView(
     private val audioWaveIcon = AppCompatResources.getDrawable(ctx, R.drawable.ic_audio_wave)?.mutate()
     private val textCursorIcon = AppCompatResources.getDrawable(ctx, R.drawable.ic_text_cursor)?.mutate()
     private val hideIcon = AppCompatResources.getDrawable(ctx, R.drawable.ic_keyboard_arrow_down)?.mutate()
+    private val numpadEnterIcon = AppCompatResources.getDrawable(ctx, R.drawable.ic_numpad_return)?.mutate()
     private val toolbarBounds = mutableMapOf<String, Rect>()
 
     var onHideKeyboard: (() -> Unit)? = null
@@ -240,10 +241,10 @@ class KeyboardView(
                     canvas.drawText(sugg, x + pillWidth / 2f, textY, suggestionPaint)
                 }
             } else {
-                // 5 toolbar icons: Audio, Language (in place of Emoji), Cursor, Clipboard, Hide
+                // 5 toolbar icons matching 123.png: Audio wave, Smiley, Cursor, Clipboard, Hide
                 val icons = listOf(
                     "audio_wave" to (audioWaveIcon ?: micIcon),
-                    "language" to (languageIcon ?: emojiIcon),
+                    "emoji" to (emojiIcon ?: languageIcon),
                     "cursor" to textCursorIcon,
                     "clipboard" to clipboardIcon,
                     "hide" to hideIcon,
@@ -708,20 +709,37 @@ class KeyboardView(
                     }
                 }
                 KC.ENTER -> {
-                    enterIcon?.let { icon ->
-                        val iconSize = ((bottom - top) * 0.44f).toInt()
+                    val icon = numpadEnterIcon ?: enterIcon
+                    icon?.let {
+                        val iconSize = ((bottom - top) * 0.46f).toInt()
                         val iconLeft = (centerX - iconSize / 2f).toInt()
                         val iconTop = (centerY - iconSize / 2f).toInt()
-                        icon.setTint(customTextColor ?: 0xFF041E49.toInt())
-                        icon.setBounds(iconLeft, iconTop, iconLeft + iconSize, iconTop + iconSize)
-                        icon.draw(canvas)
+                        it.setBounds(iconLeft, iconTop, iconLeft + iconSize, iconTop + iconSize)
+                        it.draw(canvas)
                     }
                 }
                 KC.SPACE -> {
-                    textPaint.color = customTextColor ?: theme.keyText
-                    textPaint.textSize = (bottom - top) * 0.46f
-                    val baseline = centerY - ((textPaint.ascent() + textPaint.descent()) / 2f)
-                    canvas.drawText("␣", centerX, baseline, textPaint)
+                    val bracketW = (right - left) * 0.40f
+                    val bracketH = (bottom - top) * 0.16f
+                    val bLeft = centerX - bracketW / 2f
+                    val bRight = centerX + bracketW / 2f
+                    val bBottom = centerY + bracketH / 2f
+                    val bTop = centerY - bracketH / 2f
+
+                    val spacePath = android.graphics.Path().apply {
+                        moveTo(bLeft, bTop)
+                        lineTo(bLeft, bBottom)
+                        lineTo(bRight, bBottom)
+                        lineTo(bRight, bTop)
+                    }
+                    val spacePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                        color = customTextColor ?: theme.keyText
+                        style = Paint.Style.STROKE
+                        strokeWidth = 2.4f * density
+                        strokeCap = Paint.Cap.ROUND
+                        strokeJoin = Paint.Join.ROUND
+                    }
+                    canvas.drawPath(spacePath, spacePaint)
                 }
                 else -> {
                     textPaint.color = customTextColor ?: theme.keyText
@@ -773,7 +791,12 @@ class KeyboardView(
         val row4Y = yStart + rows123Height + rowSpacingPx
         val row4Bottom = row4Y + keyHeightPx
 
-        drawKey(Key("ABC", KC.ABC, isModifier = true), xCol1, row4Y, xCol2, row4Bottom, fontSizeRatio = 0.32f)
+        drawKey(
+            Key("ABC", KC.ABC, isModifier = true),
+            xCol1, row4Y, xCol2, row4Bottom,
+            fontSizeRatio = 0.34f,
+            customRadius = keyHeightPx * 0.45f
+        )
 
         val commaWidth = col2Width * (0.9f / 2.0f)
         drawKey(Key(",", ','.code), xCol2, row4Y, xCol2 + commaWidth, row4Bottom, fontSizeRatio = 0.48f)
