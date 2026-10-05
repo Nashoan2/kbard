@@ -378,18 +378,11 @@ class KeyboardView(
                         )
                         keyIcon.draw(canvas)
                     } else {
-                        val isAccentKey = key.code in listOf(KC.ABC, KC.SYMBOLS, KC.SHIFT_SYMBOLS, KC.LANGUAGE) ||
-                            displayLabel == "123" ||
-                            displayLabel == "AR" ||
-                            displayLabel == "EN" ||
-                            displayLabel == "تنفيذ" ||
-                            displayLabel == "abc" ||
-                            displayLabel == "1/2" ||
-                            displayLabel == "2/2" ||
-                            displayLabel == "?123"
+                        val isCyanKey = displayLabel == "AR" || displayLabel == "EN" || key.label == "AR" || key.label == "EN"
+                        val isBoldKey = isCyanKey || displayLabel == "123" || key.label == "123" || key.code in listOf(KC.ABC, KC.SYMBOLS, KC.SHIFT_SYMBOLS) || displayLabel == "ABC"
 
-                        textPaint.color = if (isAccentKey) theme.keyAccent else theme.keyText
-                        textPaint.typeface = if (isAccentKey) {
+                        textPaint.color = if (isCyanKey) theme.keyAccent else theme.keyText
+                        textPaint.typeface = if (isBoldKey) {
                             android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD)
                         } else {
                             android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.NORMAL)
@@ -417,18 +410,6 @@ class KeyboardView(
                         textPaint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.NORMAL)
                     }
                     textPaint.textSize = defaultTextSize
-
-                    // Draw mic icon on spacebar matching screenshot
-                    if (key.code == KC.SPACE && micIcon != null) {
-                        val micSize = (keyHeightPx * 0.36f).toInt()
-                        val micRight = (x2 + kw.toFloat() - (14f * density)).toInt()
-                        val micLeft = micRight - micSize
-                        val micTop = (y + (6f * density)).toInt()
-                        micIcon.setTint(0xFFE1E4EA.toInt())
-                        micIcon.alpha = 240
-                        micIcon.setBounds(micLeft, micTop, micRight, micTop + micSize)
-                        micIcon.draw(canvas)
-                    }
 
                     x2 += kw.toFloat()
                 }

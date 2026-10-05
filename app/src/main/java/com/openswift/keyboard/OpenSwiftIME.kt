@@ -270,7 +270,7 @@ class OpenSwiftIME : InputMethodService() {
             }
             KC.SYMBOLS -> {
                 symbolsActive = true
-                currentLayout = Layouts.Symbols
+                currentLayout = Layouts.Numpad
                 keyboardView.updateLayout(currentLayout)
             }
             KC.ABC -> {
@@ -324,7 +324,12 @@ class OpenSwiftIME : InputMethodService() {
                 updateSuggestions()
             }
             else -> {
-                if (label.length == 1) {
+                if (label == "لا") {
+                    currentWord.append("لا")
+                    ic.commitText("لا", 1)
+                    appendSnippetText("لا")
+                    updateSuggestions()
+                } else if (label.length == 1) {
                     val ch = label[0]
                     val text = if (shiftActive && ch.isLetter()) ch.uppercase() else ch.toString()
                     if (TextTokenPolicy.continuesWord(ch, currentWord)) {

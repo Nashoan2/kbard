@@ -88,13 +88,9 @@ fun KeyboardPreview(
                     horizontalArrangement = Arrangement.spacedBy(keySpacing),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val row1 = listOf(
-                        "ض" to "١", "ص" to "٢", "ث" to "٣", "ق" to "٤",
-                        "ف" to "٥", "غ" to "٦", "ع" to "٧", "ه" to "٨",
-                        "خ" to "٩", "ح" to "٠", "ج" to "چ"
-                    )
-                    row1.forEach { (char, hint) ->
-                        PreviewKey(char, bgColor, textColor, keyHeight, modifier = Modifier.weight(1f), hint = hint)
+                    val row1 = listOf("ض", "ص", "ث", "ق", "ف", "غ", "ع", "ه", "خ", "ح", "ج")
+                    row1.forEach { char ->
+                        PreviewKey(char, bgColor, textColor, keyHeight, modifier = Modifier.weight(1f))
                     }
                 }
                 
@@ -106,17 +102,13 @@ fun KeyboardPreview(
                     horizontalArrangement = Arrangement.spacedBy(keySpacing),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val row2 = listOf(
-                        "ش" to "$", "س" to "&", "ي" to "ى", "ب" to "پ",
-                        "ل" to "لا", "ا" to "أ", "ت" to "ـ", "ن" to ")",
-                        "م" to "(", "ك" to "گ", "ة" to null
-                    )
-                    row2.forEach { (char, hint) ->
-                        PreviewKey(char, bgColor, textColor, keyHeight, modifier = Modifier.weight(1f), hint = hint)
+                    val row2 = listOf("ش", "س", "ي", "ب", "ل", "ا", "ت", "ن", "م", "ك", "ة")
+                    row2.forEach { char ->
+                        PreviewKey(char, bgColor, textColor, keyHeight, modifier = Modifier.weight(1f))
                     }
                 }
                 
-                // Row 3 (10 keys): ء ظ ط ذ د ز ر و ، Delete
+                // Row 3 (10 keys): ى ظ ط ذ د ز ر و أ Delete
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -124,18 +116,14 @@ fun KeyboardPreview(
                     horizontalArrangement = Arrangement.spacedBy(keySpacing),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val row3 = listOf(
-                        "ء" to "@", "ظ" to "#", "ط" to "_", "ذ" to "\"",
-                        "د" to "!", "ز" to "؟", "ر" to "؛", "و" to "ؤ",
-                        "،" to "'"
-                    )
-                    row3.forEach { (char, hint) ->
-                        PreviewKey(char, bgColor, textColor, keyHeight, modifier = Modifier.weight(1f), hint = hint)
+                    val row3 = listOf("ى", "ظ", "ط", "ذ", "د", "ز", "ر", "و", "أ")
+                    row3.forEach { char ->
+                        PreviewKey(char, bgColor, textColor, keyHeight, modifier = Modifier.weight(1f))
                     }
                     PreviewKey("⌫", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.55f), isModifier = true)
                 }
                 
-                // Row 4 (6 keys): 123, AR, a/،, space, ., Enter
+                // Row 4 (6 keys): 123, AR, ء, space, لا, Enter
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -143,58 +131,86 @@ fun KeyboardPreview(
                     horizontalArrangement = Arrangement.spacedBy(keySpacing),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    PreviewKey("123", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.35f), isModifier = true)
+                    PreviewKey("123", modifierBg, textColor, keyHeight, modifier = Modifier.weight(1.35f), isModifier = true)
                     PreviewKey("AR", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.15f), isModifier = true)
-                    PreviewKey("a", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.0f), hint = "،")
-                    PreviewSpaceKey(bgColor, subtleColor, keyHeight, modifier = Modifier.weight(3.9f))
-                    PreviewKey(".", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.9f))
+                    PreviewKey("ء", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.95f))
+                    PreviewSpaceKey(bgColor, keyHeight, modifier = Modifier.weight(4.1f))
+                    PreviewKey("لا", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.0f))
                     PreviewKey("↵", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.45f), isModifier = true)
                 }
             }
             "123", "numpad" -> {
-                // Row 1: 1 2 3 4 5 6 7 8 9 0
+                // Layout matching 123.png exactly
                 Row(
-                    modifier = Modifier.fillMaxWidth().height(keyHeight),
-                    horizontalArrangement = Arrangement.spacedBy(keySpacing),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(keyHeight * 4 + keySpacing * 3),
+                    horizontalArrangement = Arrangement.spacedBy(keySpacing)
                 ) {
-                    listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0").forEach {
-                        PreviewKey(it, bgColor, textColor, keyHeight, modifier = Modifier.weight(1f))
+                    // Column 1: Operators (+, -, *, /) and ABC at bottom
+                    Column(
+                        modifier = Modifier
+                            .weight(1.15f)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.spacedBy(keySpacing)
+                    ) {
+                        PreviewKey("+", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.75f))
+                        PreviewKey("-", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.75f))
+                        PreviewKey("*", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.75f))
+                        PreviewKey("/", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.75f))
+                        PreviewKey("ABC", modifierBg, textColor, keyHeight, modifier = Modifier.weight(1f), isModifier = true, isPill = true)
                     }
-                }
-                // Row 2: @ # $ _ & - + ( ) /
-                Row(
-                    modifier = Modifier.fillMaxWidth().height(keyHeight),
-                    horizontalArrangement = Arrangement.spacedBy(keySpacing),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    listOf("@", "#", "$", "_", "&", "-", "+", "(", ")", "/").forEach {
-                        PreviewKey(it, bgColor, textColor, keyHeight, modifier = Modifier.weight(1f))
+
+                    // Columns 2, 3, 4, 5
+                    Column(
+                        modifier = Modifier
+                            .weight(7.15f)
+                            .fillMaxHeight(),
+                        verticalArrangement = Arrangement.spacedBy(keySpacing)
+                    ) {
+                        // Row 1: 1 2 3 %
+                        Row(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(keySpacing)
+                        ) {
+                            PreviewKey("1", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("2", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("3", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("%", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.15f))
+                        }
+                        // Row 2: 4 5 6 ␣
+                        Row(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(keySpacing)
+                        ) {
+                            PreviewKey("4", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("5", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("6", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("␣", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.15f))
+                        }
+                        // Row 3: 7 8 9 ⌫
+                        Row(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(keySpacing)
+                        ) {
+                            PreviewKey("7", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("8", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("9", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("⌫", modifierBg, textColor, keyHeight, modifier = Modifier.weight(1.15f), isModifier = true)
+                        }
+                        // Row 4: , !?# 0 = . ↵
+                        Row(
+                            modifier = Modifier.fillMaxWidth().weight(1f),
+                            horizontalArrangement = Arrangement.spacedBy(keySpacing)
+                        ) {
+                            PreviewKey(",", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.9f))
+                            PreviewKey("!?#", modifierBg, textColor, keyHeight, modifier = Modifier.weight(1.1f), isModifier = true)
+                            PreviewKey("0", bgColor, textColor, keyHeight, modifier = Modifier.weight(2f))
+                            PreviewKey("=", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.1f))
+                            PreviewKey(".", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.9f))
+                            PreviewKey("↵", Color(0xFFA8C7FA), Color(0xFF041E49), keyHeight, modifier = Modifier.weight(1.15f), isModifier = true, isPill = true)
+                        }
                     }
-                }
-                // Row 3: = \ * " ' : ; ! ؟ ⌫
-                Row(
-                    modifier = Modifier.fillMaxWidth().height(keyHeight),
-                    horizontalArrangement = Arrangement.spacedBy(keySpacing),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    listOf("=", "\\", "*", "\"", "'", ":", ";", "!", "؟").forEach {
-                        PreviewKey(it, bgColor, textColor, keyHeight, modifier = Modifier.weight(1f))
-                    }
-                    PreviewKey("⌫", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.4f), isModifier = true)
-                }
-                // Row 4: ABC AR ، space . ↵
-                Row(
-                    modifier = Modifier.fillMaxWidth().height(keyHeight),
-                    horizontalArrangement = Arrangement.spacedBy(keySpacing),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    PreviewKey("ABC", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.35f), isModifier = true)
-                    PreviewKey("AR", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.15f), isModifier = true)
-                    PreviewKey("،", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.0f))
-                    PreviewSpaceKey(bgColor, subtleColor, keyHeight, modifier = Modifier.weight(3.9f))
-                    PreviewKey(".", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.9f))
-                    PreviewKey("↵", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.45f), isModifier = true)
                 }
             }
             else -> {
@@ -244,10 +260,10 @@ fun KeyboardPreview(
                     horizontalArrangement = Arrangement.spacedBy(keySpacing),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    PreviewKey("123", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.35f), isModifier = true)
+                    PreviewKey("123", modifierBg, textColor, keyHeight, modifier = Modifier.weight(1.35f), isModifier = true)
                     PreviewKey("EN", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.15f), isModifier = true)
                     PreviewKey(",", bgColor, textColor, keyHeight, modifier = Modifier.weight(1.0f))
-                    PreviewSpaceKey(bgColor, subtleColor, keyHeight, modifier = Modifier.weight(3.9f))
+                    PreviewSpaceKey(bgColor, keyHeight, modifier = Modifier.weight(3.9f))
                     PreviewKey(".", bgColor, textColor, keyHeight, modifier = Modifier.weight(0.9f))
                     PreviewKey("↵", modifierBg, accentColor, keyHeight, modifier = Modifier.weight(1.45f), isModifier = true)
                 }
@@ -259,7 +275,6 @@ fun KeyboardPreview(
 @Composable
 fun PreviewSpaceKey(
     bgColor: Color,
-    micColor: Color,
     height: androidx.compose.ui.unit.Dp,
     modifier: Modifier = Modifier
 ) {
@@ -269,17 +284,7 @@ fun PreviewSpaceKey(
             .background(bgColor, RoundedCornerShape(6.dp))
             .border(0.5.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(6.dp)),
         contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_mic),
-            contentDescription = "Voice",
-            tint = micColor,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 4.dp, end = 7.dp)
-                .size(13.dp)
-        )
-    }
+    ) {}
 }
 
 @Composable
@@ -290,16 +295,18 @@ fun PreviewKey(
     height: androidx.compose.ui.unit.Dp,
     modifier: Modifier = Modifier,
     isModifier: Boolean = false,
-    hint: String? = null
+    hint: String? = null,
+    isPill: Boolean = false
 ) {
+    val cornerRadius = if (isPill) 20.dp else 6.dp
     Box(
         modifier = modifier
             .height(height)
             .background(
                 bgColor,
-                RoundedCornerShape(6.dp)
+                RoundedCornerShape(cornerRadius)
             )
-            .border(0.5.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(6.dp)),
+            .border(0.5.dp, Color.White.copy(alpha = 0.08f), RoundedCornerShape(cornerRadius)),
         contentAlignment = Alignment.Center
     ) {
         if (label == "⌫") {
@@ -339,7 +346,7 @@ fun PreviewKey(
             Text(
                 label,
                 color = textColor,
-                fontSize = if (label.length > 2) 11.sp else 13.sp,
+                fontSize = if (label.length > 2) 11.sp else 14.sp,
                 fontWeight = if (label in listOf("123", "AR", "EN", "ABC")) FontWeight.Bold else FontWeight.Normal,
                 maxLines = 1
             )
