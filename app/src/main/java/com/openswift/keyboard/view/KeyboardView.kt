@@ -158,6 +158,12 @@ class KeyboardView(
     private val glideTrail = mutableListOf<TrailPoint>()
     private val trailFadeMs = 300L
 
+    private var longPressTriggered = false
+    private var touchDownX = 0f
+    private var touchDownY = 0f
+    private val longPressHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private var longPressRunnable: Runnable? = null
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val w = MeasureSpec.getSize(widthMeasureSpec)
         val density = resources.displayMetrics.density
@@ -331,9 +337,7 @@ class KeyboardView(
                     
                     // Convert to uppercase if shift is active and key is a letter
                     val displayLabel = if (key.code == KC.SPACE) {
-                        if (keyLayout.id.startsWith("symbols")) ""
-                        else if (keyLayout.id == "arabic") "العربية"
-                        else "English"
+                        ""
                     } else if (shiftActive && key.label.length == 1 && key.label[0].isLetter()) {
                         key.label.uppercase()
                     } else {
@@ -352,7 +356,6 @@ class KeyboardView(
                         key.code == KC.SHIFT -> shiftIcon
                         key.code == KC.DELETE -> deleteIcon
                         key.code == KC.ENTER -> enterIcon
-                        key.code == KC.LANGUAGE || key.code == KC.EMOJI -> languageIcon ?: emojiIcon
                         key.code == KC.SETTINGS -> settingsIcon
                         else -> null
                     }
@@ -375,7 +378,10 @@ class KeyboardView(
                         )
                         keyIcon.draw(canvas)
                     } else {
-                        val isAccentKey = key.code in listOf(KC.ABC, KC.SYMBOLS, KC.SHIFT_SYMBOLS) ||
+                        val isAccentKey = key.code in listOf(KC.ABC, KC.SYMBOLS, KC.SHIFT_SYMBOLS, KC.LANGUAGE) ||
+                            displayLabel == "123" ||
+                            displayLabel == "AR" ||
+                            displayLabel == "EN" ||
                             displayLabel == "تنفيذ" ||
                             displayLabel == "abc" ||
                             displayLabel == "1/2" ||
@@ -383,6 +389,11 @@ class KeyboardView(
                             displayLabel == "?123"
 
                         textPaint.color = if (isAccentKey) theme.keyAccent else theme.keyText
+                        textPaint.typeface = if (isAccentKey) {
+                            android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD)
+                        } else {
+                            android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.NORMAL)
+                        }
 
                         val hasHint = key.popup.isNotEmpty() && !key.isModifier && key.code != KC.SPACE && (key.popup.firstOrNull()?.length ?: 0) <= 2
                         val hint = if (hasHint) key.popup.firstOrNull() else null
@@ -394,7 +405,7 @@ class KeyboardView(
 
                             // Secondary hint centered horizontally in lower portion
                             hintPaint.textSize = keyHeightPx * 0.28f
-                            hintPaint.color = 0xFF8A909D.toInt()
+                            hintPaint.color = 0xFF8E95A5.toInt()
                             val hintY = y + (keyHeightPx * 0.74f) - ((hintPaint.ascent() + hintPaint.descent()) / 2f)
                             canvas.drawText(hint, textX, hintY, hintPaint)
                         } else {
@@ -403,21 +414,19 @@ class KeyboardView(
                             canvas.drawText(displayLabel, textX, mainY, textPaint)
                         }
                         textPaint.color = theme.keyText
+                        textPaint.typeface = android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.NORMAL)
                     }
                     textPaint.textSize = defaultTextSize
 
                     // Draw mic icon on spacebar matching screenshot
                     if (key.code == KC.SPACE && micIcon != null) {
-                        val micSize = (keyHeightPx * 0.32f).toInt()
-                        val micLeft = (textX - (micSize / 2f)).toInt()
-                        val micTop = if (displayLabel.isEmpty()) {
-                            (y + (keyHeightPx * 0.22f)).toInt()
-                        } else {
-                            (y + ((keyHeightPx - micSize) / 2f)).toInt()
-                        }
-                        micIcon.setTint(0xFF8A909D.toInt())
+                        val micSize = (keyHeightPx * 0.36f).toInt()
+                        val micRight = (x2 + kw.toFloat() - (14f * density)).toInt()
+                        val micLeft = micRight - micSize
+                        val micTop = (y + (6f * density)).toInt()
+                        micIcon.setTint(0xFFE1E4EA.toInt())
                         micIcon.alpha = 240
-                        micIcon.setBounds(micLeft, micTop, micLeft + micSize, micTop + micSize)
+                        micIcon.setBounds(micLeft, micTop, micRight, micTop + micSize)
                         micIcon.draw(canvas)
                     }
 
@@ -475,12 +484,33 @@ class KeyboardView(
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        val density = resources.displayMetrics.density
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 glideStartTime = System.currentTimeMillis()
                 isGliding = false
                 glideSamples.clear()
                 glideTrail.clear()
+                touchDownX = event.x
+                touchDownY = event.y
+                longPressTriggered = false
+
+                val pressedKey = findKeyAt(event.x, event.y)
+                if (pressedKey != null && pressedKey.popup.isNotEmpty() && !pressedKey.isModifier) {
+                    val popupTarget = pressedKey.popup.firstOrNull()
+                    if (popupTarget != null && popupTarget.isNotEmpty()) {
+                        longPressRunnable = Runnable {
+                            longPressTriggered = true
+                            isGliding = false
+                            glideSamples.clear()
+                            onKeyListener?.invoke(popupTarget.first().code, popupTarget)
+                            try {
+                                performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+                            } catch (_: Exception) {}
+                        }
+                        longPressHandler.postDelayed(longPressRunnable!!, 380L)
+                    }
+                }
                 
                 // Add ripple on tap (cap to maxRipples to prevent memory bloat)
                 if (ripples.size < maxRipples) {
@@ -493,6 +523,12 @@ class KeyboardView(
                 return true
             }
             MotionEvent.ACTION_MOVE -> {
+                val dx = kotlin.math.abs(event.x - touchDownX)
+                val dy = kotlin.math.abs(event.y - touchDownY)
+                if (dx > 14f * density || dy > 14f * density) {
+                    longPressRunnable?.let { longPressHandler.removeCallbacks(it) }
+                }
+
                 val elapsed = System.currentTimeMillis() - glideStartTime
                 if (!isGliding && elapsed > 80L && glideEnabled) {
                     isGliding = true
@@ -509,6 +545,14 @@ class KeyboardView(
                 return true
             }
             MotionEvent.ACTION_UP -> {
+                longPressRunnable?.let { longPressHandler.removeCallbacks(it) }
+                if (longPressTriggered) {
+                    isGliding = false
+                    glideSamples.clear()
+                    postInvalidateOnAnimation()
+                    return true
+                }
+
                 if (isGliding && glideSamples.size >= 2) {
                     val decoded = glideDecoder.decode(glideSamples)
                     if (decoded.isNotEmpty()) {
@@ -534,7 +578,8 @@ class KeyboardView(
                         for ((action, rect) in toolbarBounds) {
                             if (rect.contains(event.x.toInt(), event.y.toInt())) {
                                 when (action) {
-                                    "language", "emoji" -> onKeyListener?.invoke(KC.LANGUAGE, "Language")
+                                    "emoji" -> onKeyListener?.invoke(KC.EMOJI, "Emoji")
+                                    "language" -> onKeyListener?.invoke(KC.LANGUAGE, "Language")
                                     "clipboard" -> onKeyListener?.invoke(KC.CLIPBOARD, "Clipboard")
                                     "audio_wave", "mic" -> onKeyListener?.invoke(KC.SETTINGS, "Settings")
                                     "cursor" -> onKeyListener?.invoke(KC.SETTINGS, "Settings")

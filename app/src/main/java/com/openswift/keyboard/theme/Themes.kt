@@ -40,14 +40,14 @@ object Themes {
     val Amoled = KbTheme(
         id = "amoled",
         name = "Cyan Slate",
-        background = KbTheme.rgb(0x13, 0x15, 0x18),
-        keyBackground = KbTheme.rgb(0x28, 0x2C, 0x34),
-        keyModifierBackground = KbTheme.rgb(0x28, 0x2C, 0x34),
+        background = KbTheme.rgb(0x11, 0x12, 0x16),
+        keyBackground = KbTheme.rgb(0x23, 0x27, 0x2F),
+        keyModifierBackground = KbTheme.rgb(0x19, 0x1A, 0x20),
         keyText = KbTheme.rgb(0xFF, 0xFF, 0xFF),
-        keyAccent = KbTheme.rgb(0x26, 0xC6, 0xDA),
-        suggestionBg = KbTheme.rgb(0x13, 0x15, 0x18),
-        suggestionText = KbTheme.rgb(0xC4, 0xC9, 0xD4),
-        gestureTrail = KbTheme.rgb(0x26, 0xC6, 0xDA)
+        keyAccent = KbTheme.rgb(0x00, 0xE5, 0xFF),
+        suggestionBg = KbTheme.rgb(0x11, 0x12, 0x16),
+        suggestionText = KbTheme.rgb(0xE1, 0xE4, 0xEA),
+        gestureTrail = KbTheme.rgb(0x00, 0xE5, 0xFF)
     )
 
     val Mocha = KbTheme(
@@ -79,14 +79,14 @@ object Themes {
     val SwiftDark = KbTheme(
         id = "swift_dark",
         name = "Swift Dark",
-        background = KbTheme.rgb(20, 26, 38),
-        keyBackground = KbTheme.rgb(36, 46, 64),
-        keyModifierBackground = KbTheme.rgb(20, 26, 38),
-        keyText = KbTheme.rgb(255, 255, 255),
-        keyAccent = KbTheme.rgb(0, 174, 239),
-        suggestionBg = KbTheme.rgb(15, 20, 30),
-        suggestionText = KbTheme.rgb(220, 230, 240),
-        gestureTrail = KbTheme.rgb(0, 174, 239)
+        background = KbTheme.rgb(0x11, 0x12, 0x16),
+        keyBackground = KbTheme.rgb(0x23, 0x27, 0x2F),
+        keyModifierBackground = KbTheme.rgb(0x19, 0x1A, 0x20),
+        keyText = KbTheme.rgb(0xFF, 0xFF, 0xFF),
+        keyAccent = KbTheme.rgb(0x00, 0xE5, 0xFF),
+        suggestionBg = KbTheme.rgb(0x11, 0x12, 0x16),
+        suggestionText = KbTheme.rgb(0xE1, 0xE4, 0xEA),
+        gestureTrail = KbTheme.rgb(0x00, 0xE5, 0xFF)
     )
 
     val MaterialLight = KbTheme(

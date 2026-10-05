@@ -270,7 +270,7 @@ class OpenSwiftIME : InputMethodService() {
             }
             KC.SYMBOLS -> {
                 symbolsActive = true
-                currentLayout = Layouts.Numpad
+                currentLayout = Layouts.Symbols
                 keyboardView.updateLayout(currentLayout)
             }
             KC.ABC -> {
@@ -282,13 +282,17 @@ class OpenSwiftIME : InputMethodService() {
             KC.SHIFT_SYMBOLS -> {
                 symbolsActive = true
                 currentLayout = when (currentLayout.id) {
-                    Layouts.Numpad.id -> Layouts.Symbols
                     Layouts.Symbols.id -> Layouts.SymbolsShift
+                    Layouts.SymbolsShift.id -> Layouts.Symbols
                     else -> Layouts.Symbols
                 }
                 keyboardView.updateLayout(currentLayout)
             }
-            KC.LANGUAGE, KC.EMOJI -> {
+            KC.EMOJI -> {
+                emojiMode = true
+                showEmojiView()
+            }
+            KC.LANGUAGE -> {
                 toggleLanguage()
             }
             KC.CLIPBOARD -> showClipboardView()
@@ -300,12 +304,21 @@ class OpenSwiftIME : InputMethodService() {
                         .putExtra(MainActivity.EXTRA_PER_APP_PACKAGE, activeAppConfig.packageName),
                 )
             }
-            KC.COMMA, KC.PERIOD -> {
-                val ch = label[0]
+            KC.COMMA -> {
+                val text = if (activeLanguageCode == KeyboardLanguages.Arabic.code) "،" else ","
                 val expanded = expandSnippetIfMatched()
                 if (!expanded && currentWord.isNotEmpty()) commitWord(correctedCurrentWord())
-                ic.commitText(ch.toString(), 1)
-                appendSnippetText(ch.toString())
+                ic.commitText(text, 1)
+                appendSnippetText(text)
+                shiftActive = false
+                keyboardView.setShift(false)
+                updateSuggestions()
+            }
+            KC.PERIOD -> {
+                val expanded = expandSnippetIfMatched()
+                if (!expanded && currentWord.isNotEmpty()) commitWord(correctedCurrentWord())
+                ic.commitText(".", 1)
+                appendSnippetText(".")
                 shiftActive = false
                 keyboardView.setShift(false)
                 updateSuggestions()
